@@ -1,0 +1,49 @@
+<Config>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationQuestion1</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">What was Fer.al's spawn map?</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationQuestion2</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">&lt;skipped&gt;</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationQuestion3</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">&lt;skipped&gt;</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationQuestion4</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">&lt;skipped&gt;</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationQuestion5</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">&lt;skipped&gt;</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">reviewChannel</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:unsignedLong" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">779263532066799647</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationChannel</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:unsignedLong" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">954728039894368336</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">messageContent</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">**Welcome to Testing server!**
+
+Please verify that you are a ferellian to gain access to this server.
+To begin the verification process, press 'Verify' below.</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">reviewerRole</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:unsignedLong" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">755502985005629560</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">sparkRole</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:unsignedLong" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">779271429878448200</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">verificationMessageID</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:unsignedLong" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">965798971547189290</anyType>
+  </Entry>
+</Config>

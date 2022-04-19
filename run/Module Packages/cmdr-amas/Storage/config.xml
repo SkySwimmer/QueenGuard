@@ -1,0 +1,10 @@
+<Config>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">Amas-Host</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">localhost</anyType>
+  </Entry>
+  <Entry>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">Amas-Port</anyType>
+    <anyType xmlns:q1="http://www.w3.org/2001/XMLSchema" p2:type="q1:string" xmlns:p2="http://www.w3.org/2001/XMLSchema-instance">8082</anyType>
+  </Entry>
+</Config>

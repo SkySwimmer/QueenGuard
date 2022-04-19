@@ -1,0 +1,170 @@
+#!/bin/bash
+echo Marking files as executable...
+chmod +x buildpackage.sh
+
+echo Checking dependencies...
+missingdepends=false
+
+requiredvermsbuild=15.6.0.0
+requiredvernuget=5.6.0.6489
+requiredvermake=4.2
+requiredvergit=2.28.0
+requiredverdotnet=5.0.205
+
+echo Searching for dotnet...
+if command -v dotnet &> /dev/null 
+then
+    requiredver=$requiredverdotnet
+    currentver="$(dotnet --version)"
+    packagename="DotNet SDK"
+    installed=false
+    
+    if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
+        echo $packagename is installed.
+        installed=true
+    else
+        echo $packagename is installed but OUTDATED, minimal version: $requiredver, current version: $currentver
+        installed=false
+        missingdepends=true
+    fi
+    
+    dotnetinstalled=$installed
+else
+    echo DotNet SDK Core is NOT installed.
+    dotnetinstalled=false
+    missingdepends=true
+fi
+
+echo Searching for MSBuild...
+if command -v msbuild &> /dev/null 
+then
+    requiredver=$requiredvermsbuild
+    currentver="$(msbuild -version|grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+\.\\d+")"
+    packagename=MSBuild
+    installed=false
+    
+    if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
+        echo $packagename is installed.
+        installed=true
+    else
+        echo $packagename is installed but OUTDATED, minimal version: $requiredver, current version: $currentver
+        installed=false
+        missingdepends=true
+    fi
+    
+    msbuildinstalled=$installed
+else
+    echo MSBuild is NOT installed.
+    msbuildinstalled=false
+    missingdepends=true
+fi
+
+echo Searching for NuGet...
+if command -v nuget &> /dev/null 
+then
+    requiredver=$requiredvernuget
+    currentver="$(nuget|grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+\.\\d+")"
+    packagename=NuGet
+    installed=false
+    
+    if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
+        echo $packagename is installed.
+        installed=true
+    else
+        echo $packagename is installed but OUTDATED, minimal version: $requiredver, current version: $currentver
+        installed=false
+        missingdepends=true
+    fi
+    
+    nugetinstalled=$installed
+else
+    echo NuGet is NOT installed.
+    nugetinstalled=false
+    missingdepends=true
+fi
+
+echo Searching for make...
+if command -v make &> /dev/null 
+then
+    requiredver=$requiredvermake
+    currentver="$(make --version|grep --only-matching --perl-regexp "\\d+\.\\d+")"
+    packagename=make
+    installed=false
+    
+    if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
+        echo $packagename is installed.
+        installed=true
+    else
+        echo $packagename is installed but OUTDATED, minimal version: $requiredver, current version: $currentver
+        installed=false
+        missingdepends=true
+    fi
+    
+    makeinstalled=$installed
+else
+    echo make is NOT installed.
+    makeinstalled=false
+    missingdepends=true
+fi
+
+echo Searching for Git...
+if command -v git &> /dev/null 
+then
+    requiredver=$requiredvergit
+    currentver="$(git --version|grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+")"
+    packagename=Git
+    installed=false
+    
+    if [ "$(printf '%s\n' "$requiredver" "$currentver" | sort -V | head -n1)" = "$requiredver" ]; then 
+        echo $packagename is installed.
+        installed=true
+    else
+        echo $packagename is installed but OUTDATED, minimal version: $requiredver, current version: $currentver
+        installed=false
+        missingdepends=true
+    fi
+    
+    gitinstalled=$installed
+else
+    echo Git is NOT installed.
+    makeinstalled=false
+    missingdepends=true
+fi
+
+if [ ! -d libraries ]; then
+    echo Downloading CMD-R...
+    git clone https://github.com/Stefan0436/CMD-R.git || exit 1
+    echo Building...
+    cd CMD-R
+    chmod +x configure
+    ./configure --norepoconfig >/dev/null || exit 1
+    make >/dev/null || exit 1
+    rm -rf run
+    mkdir -p ../libraries
+    cp build -rf ../run
+    cp build/CMD-R.dll ../libraries
+    cd ..
+    rm -rf CMD-R
+fi
+
+if [ $missingdepends == "true" ]; then
+    echo
+    echo You are missing the following dependencies:
+    if [ "$dotnetinstalled" == "false" ]; then 
+        echo Mono version $requiredverdotnet or above.
+    fi
+    if [ "$msbuildinstalled" == "false" ]; then 
+        echo MSBuild version $requiredvermsbuild or above.
+    fi
+    if [ "$nugetinstalled" == "false" ]; then 
+        echo NuGet version $requiredvernuget or above.
+    fi
+    if [ "$makeinstalled" == "false" ]; then 
+        echo Make version $requiredvermake or above.
+    fi
+    if [ "$gitinstalled" == "false" ]; then 
+        echo Git version $requiredvergit or above.
+    fi
+    exit 1
+fi
+ 

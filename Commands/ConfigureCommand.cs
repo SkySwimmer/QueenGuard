@@ -76,9 +76,10 @@ namespace Ferever {
 
                     if (interaction.Data.CustomId == "setupNext" && module.serverMemory[server].ContainsKey("SetupStep")) {
                         if (((int)module.serverMemory[server]["SetupStep"]) == 1 && module.serverMemory[server].ContainsKey("SetupSparkRole")) {
+                            int i = 0;
                             List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                             foreach (SocketRole role in guild.Roles) {
-                                if (!role.IsEveryone) {
+                                if (!role.IsEveryone && (role.Name.ToLower().Contains("review") || role.Name.ToLower().Contains("mod") || role.Name.ToLower().Contains("admin"))) {
                                     if (conf.GetOrDefault("reviewerRole", null) != null) {
                                         if (((ulong)conf.GetOrDefault("reviewerRole", (ulong)0)) == role.Id) {
                                             module.serverMemory[server]["SetupReviewerRole"] = role.Id;
@@ -90,6 +91,31 @@ namespace Ferever {
                                             continue;
                                         }
                                     }
+                                    i++;
+                                    if (i == 25)
+                                        break; // FIXME: Temporary workaround so that ferever can put this bot to use
+                                    options.Add(new SelectMenuOptionBuilder()
+                                        .WithLabel(role.Name)
+                                        .WithValue(role.Id.ToString())
+                                    );
+                                }
+                            }
+                            foreach (SocketRole role in guild.Roles) {
+                                if (!role.IsEveryone && !role.Name.ToLower().Contains("review") && !role.Name.ToLower().Contains("mod") && !role.Name.ToLower().Contains("admin")) {
+                                    if (conf.GetOrDefault("reviewerRole", null) != null) {
+                                        if (((ulong)conf.GetOrDefault("reviewerRole", (ulong)0)) == role.Id) {
+                                            module.serverMemory[server]["SetupReviewerRole"] = role.Id;
+                                            options.Add(new SelectMenuOptionBuilder()
+                                                .WithLabel(role.Name)
+                                                .WithValue(role.Id.ToString())
+                                                .WithDefault(true)
+                                            );
+                                            continue;
+                                        }
+                                    }
+                                    i++;
+                                    if (i == 25)
+                                        break; // FIXME: Temporary workaround so that ferever can put this bot to use
                                     options.Add(new SelectMenuOptionBuilder()
                                         .WithLabel(role.Name)
                                         .WithValue(role.Id.ToString())
@@ -107,6 +133,7 @@ namespace Ferever {
                                 .WithButton("Next", "setupNext", ButtonStyle.Success)
                             .Build()).GetAwaiter().GetResult();
                         } else if (((int)module.serverMemory[server]["SetupStep"]) == 2 && module.serverMemory[server].ContainsKey("SetupReviewerRole")) {
+                            int i = 0;
                             List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                             foreach (SocketTextChannel ch in guild.TextChannels) {
                                 if (conf.GetOrDefault("reviewChannel", null) != null) {
@@ -120,6 +147,9 @@ namespace Ferever {
                                         continue;
                                     }
                                 }
+                                i++;
+                                if (i == 25)
+                                    break; // FIXME: Temporary workaround so that ferever can put this bot to use
                                 options.Add(new SelectMenuOptionBuilder()
                                     .WithLabel(ch.Name)
                                     .WithValue(ch.Id.ToString())
@@ -136,7 +166,8 @@ namespace Ferever {
                                 .WithButton("Next", "setupNext", ButtonStyle.Success)
                             .Build()).GetAwaiter().GetResult();
                         } else if (((int)module.serverMemory[server]["SetupStep"]) == 3 && module.serverMemory[server].ContainsKey("SetupReviewChannel")) {
-                             List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
+                            List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
+                            int i = 0;
                             foreach (SocketTextChannel ch in guild.TextChannels) {
                                 if (conf.GetOrDefault("verificationChannel", null) != null) {
                                     if (((ulong)conf.GetOrDefault("verificationChannel", (ulong)0)) == ch.Id) {
@@ -149,6 +180,9 @@ namespace Ferever {
                                         continue;
                                     }
                                 }
+                                i++;
+                                if (i == 25)
+                                    break; // FIXME: Temporary workaround so that ferever can put this bot to use
                                 options.Add(new SelectMenuOptionBuilder()
                                     .WithLabel(ch.Name)
                                     .WithValue(ch.Id.ToString())
@@ -318,8 +352,9 @@ namespace Ferever {
             Server server = GetBot().GetServerFromSocketGuild(guild);
             Server.ModuleConfig conf = server.GetModuleConfig(module);
             List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
+            int i = 0;
             foreach (SocketRole role in guild.Roles) {
-                if (!role.IsEveryone) {
+                if (!role.IsEveryone && !role.Permissions.Administrator && (role.Name.ToLower().Contains("spark") || !role.Name.ToLower().Contains("member"))) {
                     if (conf.GetOrDefault("sparkRole", null) != null) {
                         if (((ulong)conf.GetOrDefault("sparkRole", (ulong)0)) == role.Id) {
                             module.serverMemory[server]["SetupSparkRole"] = role.Id;
@@ -331,6 +366,31 @@ namespace Ferever {
                             continue;
                         }
                     }
+                    i++;
+                    if (i == 25)
+                        break; // FIXME: Temporary workaround so that ferever can put this bot to use
+                    options.Add(new SelectMenuOptionBuilder()
+                        .WithLabel(role.Name)
+                        .WithValue(role.Id.ToString())
+                    );
+                }
+            }
+            foreach (SocketRole role in guild.Roles) {
+                if (!role.IsEveryone && !role.Permissions.Administrator && !role.Name.ToLower().Contains("spark") && !role.Name.ToLower().Contains("member")) {
+                    if (conf.GetOrDefault("sparkRole", null) != null) {
+                        if (((ulong)conf.GetOrDefault("sparkRole", (ulong)0)) == role.Id) {
+                            module.serverMemory[server]["SetupSparkRole"] = role.Id;
+                            options.Add(new SelectMenuOptionBuilder()
+                                .WithLabel(role.Name)
+                                .WithValue(role.Id.ToString())
+                                .WithDefault(true)
+                            );
+                            continue;
+                        }
+                    }
+                    i++;
+                    if (i == 25)
+                        break; // FIXME: Temporary workaround so that ferever can put this bot to use
                     options.Add(new SelectMenuOptionBuilder()
                         .WithLabel(role.Name)
                         .WithValue(role.Id.ToString())

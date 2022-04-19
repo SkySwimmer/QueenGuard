@@ -153,6 +153,10 @@ namespace Ferever
                         try {
                             ulong sparkRole = (ulong)conf.GetOrDefault("sparkRole", (ulong)0);
                             if (sparkRole != 0) {
+                                if (serverMemory[server].ContainsKey("submitted-" + user.Id)) {
+                                    serverMemory[server].Remove("submitted-" + user.Id);
+                                }
+                                
                                 SocketRole sparks = (SocketRole)guild.GetRole(sparkRole);
                                 ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
                                 guild.GetUser(uid).AddRoleAsync(sparks.Id);

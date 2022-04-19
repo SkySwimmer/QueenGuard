@@ -108,7 +108,7 @@ namespace Ferever
                         try {
                             ulong sparkRole = (ulong)conf.GetOrDefault("sparkRole", (ulong)0);
                             if (user.Roles.FirstOrDefault(t => t.Id == sparkRole, null) != null) {
-                                interaction.RespondAsync("You have already verified your account, you can visit other channels of the server now.", null, false, true).GetAwaiter().GetResult();
+                                interaction.RespondAsync("You have already verified your account, you can visit the other channels of this server.", null, false, true).GetAwaiter().GetResult();
                                 return Task.CompletedTask;
                             }
 

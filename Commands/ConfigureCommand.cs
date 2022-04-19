@@ -80,7 +80,7 @@ namespace Ferever {
                             foreach (SocketRole role in guild.Roles) {
                                 if (!role.IsEveryone) {
                                     if (conf.GetOrDefault("reviewerRole", null) != null) {
-                                        if (((ulong)conf.GetOrDefault("reviewerRole", null)) == role.Id) {
+                                        if (((ulong)conf.GetOrDefault("reviewerRole", (ulong)0)) == role.Id) {
                                             module.serverMemory[server]["SetupReviewerRole"] = role.Id;
                                             options.Add(new SelectMenuOptionBuilder()
                                                 .WithLabel(role.Name)
@@ -110,7 +110,7 @@ namespace Ferever {
                             List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                             foreach (SocketTextChannel ch in guild.TextChannels) {
                                 if (conf.GetOrDefault("reviewChannel", null) != null) {
-                                    if (((ulong)conf.GetOrDefault("reviewChannel", null)) == ch.Id) {
+                                    if (((ulong)conf.GetOrDefault("reviewChannel", (ulong)0)) == ch.Id) {
                                         module.serverMemory[server]["SetupReviewChannel"] = ch.Id;
                                         options.Add(new SelectMenuOptionBuilder()
                                             .WithLabel(ch.Name)
@@ -139,7 +139,7 @@ namespace Ferever {
                              List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                             foreach (SocketTextChannel ch in guild.TextChannels) {
                                 if (conf.GetOrDefault("verificationChannel", null) != null) {
-                                    if (((ulong)conf.GetOrDefault("verificationChannel", null)) == ch.Id) {
+                                    if (((ulong)conf.GetOrDefault("verificationChannel", (ulong)0)) == ch.Id) {
                                         module.serverMemory[server]["SetupVerificationChannel"] = ch.Id;
                                         options.Add(new SelectMenuOptionBuilder()
                                             .WithLabel(ch.Name)
@@ -321,7 +321,7 @@ namespace Ferever {
             foreach (SocketRole role in guild.Roles) {
                 if (!role.IsEveryone) {
                     if (conf.GetOrDefault("sparkRole", null) != null) {
-                        if (((ulong)conf.GetOrDefault("sparkRole", null)) == role.Id) {
+                        if (((ulong)conf.GetOrDefault("sparkRole", (ulong)0)) == role.Id) {
                             module.serverMemory[server]["SetupSparkRole"] = role.Id;
                             options.Add(new SelectMenuOptionBuilder()
                                 .WithLabel(role.Name)

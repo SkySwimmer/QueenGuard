@@ -106,6 +106,12 @@ namespace Ferever
 
                     if (interaction.Data.CustomId == "beginVerification" && conf.GetOrDefault("verificationQuestion1", null) != null) {
                         try {
+                            ulong sparkRole = (ulong)conf.GetOrDefault("sparkRole", (ulong)0);
+                            if (user.Roles.FirstOrDefault(t => t.Id == sparkRole, null) != null) {
+                                interaction.RespondAsync("You have already verified your account, you can visit other channels of the server now.", null, false, true).GetAwaiter().GetResult();
+                                return Task.CompletedTask;
+                            }
+
                             if (serverMemory[server].ContainsKey("submitted-" + user.Id)) {
                                 interaction.RespondAsync("Your verification form has already been submitted, please wait for it to be reviewed.", null, false, true).GetAwaiter().GetResult();
                                 return Task.CompletedTask;

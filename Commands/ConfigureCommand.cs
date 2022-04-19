@@ -354,7 +354,7 @@ namespace Ferever {
             List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
             int i = 0;
             foreach (SocketRole role in guild.Roles) {
-                if (!role.IsEveryone && !role.Permissions.Administrator && (role.Name.ToLower().Contains("spark") || !role.Name.ToLower().Contains("member"))) {
+                if (!role.IsEveryone && !role.Permissions.Administrator && (role.Name.ToLower().Contains("spark") || role.Name.ToLower().Contains("member"))) {
                     if (conf.GetOrDefault("sparkRole", null) != null) {
                         if (((ulong)conf.GetOrDefault("sparkRole", (ulong)0)) == role.Id) {
                             module.serverMemory[server]["SetupSparkRole"] = role.Id;

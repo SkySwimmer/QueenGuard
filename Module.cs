@@ -167,7 +167,7 @@ namespace Ferever
                                 ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
                                 guild.GetUser(uid).AddRoleAsync(sparks.Id);
                                 interaction.RespondAsync("Accepted user membership, granted the `" + sparks.Name + "` role to <@!" + uid + ">.").GetAwaiter().GetResult();
-                                guild.DefaultChannel.SendMessageAsync("Welcome <@!" + uid + ">!").GetAwaiter().GetResult();
+                                guild.SystemChannel.SendMessageAsync("Welcome <@!" + uid + ">!").GetAwaiter().GetResult();
                             }
                         } catch {}
                     } else if (interaction.Data.CustomId.StartsWith("rejectUser/")) {

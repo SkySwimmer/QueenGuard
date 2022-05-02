@@ -257,7 +257,7 @@ namespace Ferever {
                                         continue;
                                     }
                                     if (sparks != null) {
-                                        if (canViewChannel(sparks, ch) || canViewChannel(guild.EveryoneRole, ch)) {
+                                        if (canViewChannel(sparks, ch) || canViewChannel(verifiedSparks, ch) || canViewChannel(guild.EveryoneRole, ch)) {
                                             continue;
                                         }
                                     }
@@ -316,7 +316,7 @@ namespace Ferever {
                                         continue;
                                     }
                                     if (sparks != null) {
-                                        if (canViewChannel(sparks, ch) || !canViewChannel(guild.EveryoneRole, ch)) {
+                                        if ((canViewChannel(sparks, ch) && canViewChannel(verifiedSparks, ch)) || canViewChannel(verifiedSparks, ch) || !canViewChannel(guild.EveryoneRole, ch)) {
                                             continue;
                                         }
                                     }

@@ -165,12 +165,9 @@ namespace Ferever
                         try {
                             ulong sparkRole = (ulong)conf.GetOrDefault("sparkRole", (ulong)0);
                             if (sparkRole != 0) {
-                                if (serverMemory[server].ContainsKey("submitted-" + user.Id)) {
-                                    serverMemory[server].Remove("submitted-" + user.Id);
-                                }
-                                
                                 bool accept = false;
 
+                                ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
                                 ulong reviewerRole = (ulong)conf.GetOrDefault("reviewerRole", (ulong)0);
                                 SocketRole reviewers = (SocketRole)guild.GetRole(reviewerRole);
                                 int count = (int)(((double)reviewers.Members.Count() / 100d) * 75d);
@@ -179,10 +176,10 @@ namespace Ferever
                                 if (count > 3)
                                     count = 3;
 
-                                if (!serverMemory[server].ContainsKey("reviewers-" + user.Id)) {
-                                    serverMemory[server]["reviewers-" + user.Id] = new List<ulong>();
+                                if (!serverMemory[server].ContainsKey("reviewers-" + uid)) {
+                                    serverMemory[server]["reviewers-" + uid] = new List<ulong>();
                                 }
-                                List<ulong> acceptedReviewers = (List<ulong>)serverMemory[server]["reviewers-" + user.Id];
+                                List<ulong> acceptedReviewers = (List<ulong>)serverMemory[server]["reviewers-" + uid];
                                 accept = acceptedReviewers.Count >= count;
                                 if (!acceptedReviewers.Contains(user.Id)) {
                                     acceptedReviewers.Add(user.Id);
@@ -196,8 +193,11 @@ namespace Ferever
                                 }
 
                                 if (accept) {
+                                    if (serverMemory[server].ContainsKey("submitted-" + uid)) {
+                                        serverMemory[server].Remove("submitted-" + uid);
+                                    }
+                                    
                                     SocketRole sparks = (SocketRole)guild.GetRole(sparkRole);
-                                    ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
                                     guild.GetUser(uid).AddRoleAsync(sparks.Id).GetAwaiter().GetResult();
                                     ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
                                     if (verifiedSparkRole != 0) {

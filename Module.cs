@@ -169,18 +169,42 @@ namespace Ferever
                                     serverMemory[server].Remove("submitted-" + user.Id);
                                 }
                                 
-                                SocketRole sparks = (SocketRole)guild.GetRole(sparkRole);
-                                ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
-                                guild.GetUser(uid).AddRoleAsync(sparks.Id).GetAwaiter().GetResult();
-                                ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
-                                if (verifiedSparkRole != 0) {
-                                    SocketRole verifiedSparks = (SocketRole)guild.GetRole(verifiedSparkRole);
-                                    if (verifiedSparks != null) {
-                                        guild.GetUser(uid).AddRoleAsync(verifiedSparks.Id).GetAwaiter().GetResult();
+                                bool accept = false;
+
+                                ulong reviewerRole = (ulong)conf.GetOrDefault("reviewerRole", (ulong)0);
+                                SocketRole reviewers = (SocketRole)guild.GetRole(reviewerRole);
+                                int count = (int)(((double)reviewers.Members.Count() / 100d) * 75d);
+                                if (count < 1)
+                                    count = 1;
+
+                                List<ulong> acceptedReviewers = (List<ulong>)serverMemory[server]["reviewers-" + user.Id];
+                                accept = acceptedReviewers.Count >= count;
+                                if (!acceptedReviewers.Contains(user.Id)) {
+                                    acceptedReviewers.Add(user.Id);
+                                    accept = acceptedReviewers.Count >= count;
+                                    if (!accept) {
+                                        interaction.RespondAsync(user.Mention + " accepted the review, waiting for " + (count - acceptedReviewers.Count) + " more reviewer(s) to verify.").GetAwaiter().GetResult();
                                     }
+                                } else {
+                                    if (!accept)
+                                        interaction.RespondAsync(user.Mention + ", you already accepted the review, please wait for the other reviewers to verify.").GetAwaiter().GetResult();
                                 }
-                                interaction.RespondAsync("Accepted user membership, granted the `" + sparks.Name + "` role to <@!" + uid + ">.").GetAwaiter().GetResult();
-                                guild.SystemChannel.SendMessageAsync("Welcome <@!" + uid + ">!").GetAwaiter().GetResult();
+
+                                if (accept) {
+                                    SocketRole sparks = (SocketRole)guild.GetRole(sparkRole);
+                                    ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
+                                    guild.GetUser(uid).AddRoleAsync(sparks.Id).GetAwaiter().GetResult();
+                                    ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
+                                    if (verifiedSparkRole != 0) {
+                                        SocketRole verifiedSparks = (SocketRole)guild.GetRole(verifiedSparkRole);
+                                        if (verifiedSparks != null) {
+                                            guild.GetUser(uid).AddRoleAsync(verifiedSparks.Id).GetAwaiter().GetResult();
+                                        }
+                                    }
+                                    interaction.RespondAsync("Accepted user membership, granted the `" + sparks.Name + "` role to <@!" + uid + ">.").GetAwaiter().GetResult();
+                                    guild.SystemChannel.SendMessageAsync("Welcome <@!" + uid + ">!").GetAwaiter().GetResult();
+                                    acceptedReviewers.Clear();
+                                }
                             }
                         } catch {}
                     } else if (interaction.Data.CustomId.StartsWith("rejectUser/")) {

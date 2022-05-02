@@ -176,6 +176,8 @@ namespace Ferever
                                 int count = (int)(((double)reviewers.Members.Count() / 100d) * 75d);
                                 if (count < 1)
                                     count = 1;
+                                if (count > 3)
+                                    count = 3;
 
                                 if (!serverMemory[server].ContainsKey("reviewers-" + user.Id)) {
                                     serverMemory[server]["reviewers-" + user.Id] = new List<ulong>();

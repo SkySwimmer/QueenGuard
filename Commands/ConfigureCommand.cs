@@ -27,6 +27,9 @@ namespace Ferever {
                     if (interaction.Data.CustomId == "sparkRole") {
                         interaction.DeferAsync().GetAwaiter().GetResult();
                         module.serverMemory[server]["SetupSparkRole"] = ulong.Parse(interaction.Data.Values.ToArray()[0]);
+                    } else  if (interaction.Data.CustomId == "verifiedSparkRole") {
+                        interaction.DeferAsync().GetAwaiter().GetResult();
+                        module.serverMemory[server]["SetupVerifiedSparkRole"] = ulong.Parse(interaction.Data.Values.ToArray()[0]);
                     } else if (interaction.Data.CustomId == "reviewerRole") {
                         interaction.DeferAsync().GetAwaiter().GetResult();
                         module.serverMemory[server]["SetupReviewerRole"] = ulong.Parse(interaction.Data.Values.ToArray()[0]);
@@ -78,6 +81,71 @@ namespace Ferever {
                     try {
                         if (interaction.Data.CustomId == "setupNext" && module.serverMemory[server].ContainsKey("SetupStep")) {
                             if (((int)module.serverMemory[server]["SetupStep"]) == 1 && module.serverMemory[server].ContainsKey("SetupSparkRole")) {
+                                List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
+                                int i = 0;
+                                foreach (SocketRole role in guild.Roles) {
+                                    if (!role.IsEveryone && !role.Permissions.Administrator && (role.Name.ToLower().Contains("spark") || role.Name.ToLower().Contains("member"))) {
+                                        i++;
+                                        if (i == 25)
+                                            break; // FIXME: Temporary workaround so that ferever can put this bot to use
+                                        if (conf.GetOrDefault("verifiedSparkRole", null) != null) {
+                                            if (((ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0)) == role.Id) {
+                                                module.serverMemory[server]["SetupVerifiedSparkRole"] = role.Id;
+                                                options.Add(new SelectMenuOptionBuilder()
+                                                    .WithLabel(role.Name)
+                                                    .WithValue(role.Id.ToString())
+                                                    .WithDefault(true)
+                                                );
+                                                continue;
+                                            }
+                                        }
+                                        options.Add(new SelectMenuOptionBuilder()
+                                            .WithLabel(role.Name)
+                                            .WithValue(role.Id.ToString())
+                                        );
+                                    }
+                                }
+                                foreach (SocketRole role in guild.Roles) {
+                                    if (!role.IsEveryone && !role.Permissions.Administrator && !role.Name.ToLower().Contains("spark") && !role.Name.ToLower().Contains("member")) {
+                                        i++;
+                                        if (i == 25)
+                                            break; // FIXME: Temporary workaround so that ferever can put this bot to use
+                                        if (conf.GetOrDefault("verifiedSparkRole", null) != null) {
+                                            if (((ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0)) == role.Id) {
+                                                module.serverMemory[server]["SetupVerifiedSparkRole"] = role.Id;
+                                                options.Add(new SelectMenuOptionBuilder()
+                                                    .WithLabel(role.Name)
+                                                    .WithValue(role.Id.ToString())
+                                                    .WithDefault(true)
+                                                );
+                                                continue;
+                                            }
+                                        }
+                                        options.Add(new SelectMenuOptionBuilder()
+                                            .WithLabel(role.Name)
+                                            .WithValue(role.Id.ToString())
+                                        );
+                                    }
+                                }
+
+                                try {
+                                    interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
+                                        .WithTitle("Queen Guard Setup: Step 2")
+                                        .WithDescription("Please select what secondary role to assign to verified members.\nThis role will be used to allow existing members to verify.")
+                                        .WithColor(Color.Gold)
+                                    .Build() }, false, false, null, new ComponentBuilder()
+                                        .WithSelectMenu("verifiedSparkRole", options)
+                                        .WithButton("Next", "setupNext", ButtonStyle.Success)
+                                    .Build()).GetAwaiter().GetResult();
+                                    module.serverMemory[server]["SetupStep"] = 2;
+                                } catch {
+                                    channel.SendMessageAsync("", false, new EmbedBuilder()
+                                        .WithTitle("Queen Guard: An error occured")
+                                        .WithDescription("Could not create a 'Member Role' selection list, this is most likely caused by incompatible roles.")
+                                        .WithColor(Color.Red)
+                                    .Build()).GetAwaiter().GetResult();
+                                }
+                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 2 && module.serverMemory[server].ContainsKey("SetupVerifiedSparkRole")) {
                                 int i = 0;
                                 List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                                 foreach (SocketRole role in guild.Roles) {
@@ -127,14 +195,14 @@ namespace Ferever {
 
                                 try {
                                     interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
-                                        .WithTitle("Queen Guard Setup: Step 2")
+                                        .WithTitle("Queen Guard Setup: Step 3")
                                         .WithDescription("Please select the role to ping after a verification form has been submitted.")
                                         .WithColor(Color.Gold)
                                     .Build() }, false, false, null, new ComponentBuilder()
                                         .WithSelectMenu("reviewerRole", options)
                                         .WithButton("Next", "setupNext", ButtonStyle.Success)
                                     .Build()).GetAwaiter().GetResult();
-                                    module.serverMemory[server]["SetupStep"] = 2;
+                                    module.serverMemory[server]["SetupStep"] = 3;
                                 } catch {
                                     channel.SendMessageAsync("", false, new EmbedBuilder()
                                         .WithTitle("Queen Guard: An error occured")
@@ -142,11 +210,13 @@ namespace Ferever {
                                         .WithColor(Color.Red)
                                     .Build()).GetAwaiter().GetResult();
                                 }
-                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 2 && module.serverMemory[server].ContainsKey("SetupReviewerRole")) {
+                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 3 && module.serverMemory[server].ContainsKey("SetupReviewerRole")) {
                                 int i = 0;
                                 List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                                 ulong sparkR = (ulong)module.serverMemory[server]["SetupSparkRole"];
                                 SocketRole sparks = guild.GetRole(sparkR);
+                                ulong vSparkR = (ulong)module.serverMemory[server]["SetupVerifiedSparkRole"];
+                                SocketRole verifiedSparks = guild.GetRole(vSparkR);
                                 ulong reviewerR = (ulong)module.serverMemory[server]["SetupReviewerRole"];
                                 SocketRole reviewers = guild.GetRole(reviewerR);
                                 foreach (SocketTextChannel ch in guild.TextChannels) {
@@ -154,7 +224,7 @@ namespace Ferever {
                                         continue;
                                     }
                                     if (sparks != null) {
-                                        if (canViewChannel(sparks, ch) || canViewChannel(guild.EveryoneRole, ch)) {
+                                        if (canViewChannel(sparks, ch) || canViewChannel(verifiedSparks, ch) || canViewChannel(guild.EveryoneRole, ch)) {
                                             continue;
                                         }
                                     }
@@ -218,14 +288,14 @@ namespace Ferever {
 
                                 try {
                                     interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
-                                        .WithTitle("Queen Guard Setup: Step 3")
+                                        .WithTitle("Queen Guard Setup: Step 4")
                                         .WithDescription("Please select the channel to which to send **submission review messages**.\nPlease make sure that this is a staff-only channel.")
                                         .WithColor(Color.Gold)
                                     .Build() }, false, false, null, new ComponentBuilder()
                                         .WithSelectMenu("reviewChannel", options)
                                         .WithButton("Next", "setupNext", ButtonStyle.Success)
                                     .Build()).GetAwaiter().GetResult();
-                                    module.serverMemory[server]["SetupStep"] = 3;
+                                    module.serverMemory[server]["SetupStep"] = 4;
                                 } catch {
                                     channel.SendMessageAsync("", false, new EmbedBuilder()
                                         .WithTitle("Queen Guard: An error occured")
@@ -233,12 +303,14 @@ namespace Ferever {
                                         .WithColor(Color.Red)
                                     .Build()).GetAwaiter().GetResult();
                                 }
-                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 3 && module.serverMemory[server].ContainsKey("SetupReviewChannel")) {
+                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 4 && module.serverMemory[server].ContainsKey("SetupReviewChannel")) {
                                 List<SelectMenuOptionBuilder> options = new List<SelectMenuOptionBuilder>();
                                 int i = 0;
 
                                 ulong sparkR = (ulong)module.serverMemory[server]["SetupSparkRole"];
                                 SocketRole sparks = guild.GetRole(sparkR);
+                                ulong vSparkR = (ulong)module.serverMemory[server]["SetupVerifiedSparkRole"];
+                                SocketRole verifiedSparks = guild.GetRole(vSparkR);
                                 foreach (SocketTextChannel ch in guild.TextChannels) {
                                     if (!ch.Name.ToLower().Contains("verif")) {
                                         continue;
@@ -273,7 +345,7 @@ namespace Ferever {
                                         continue;
                                     }
                                     if (sparks != null) {
-                                        if (canViewChannel(sparks, ch) || !canViewChannel(guild.EveryoneRole, ch)) {
+                                        if ((canViewChannel(sparks, ch) && canViewChannel(verifiedSparks, ch)) || canViewChannel(verifiedSparks, ch) || !canViewChannel(guild.EveryoneRole, ch)) {
                                             continue;
                                         }
                                     }
@@ -300,14 +372,14 @@ namespace Ferever {
 
                                 try {
                                     interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
-                                        .WithTitle("Queen Guard Setup: Step 4")
+                                        .WithTitle("Queen Guard Setup: Step 5")
                                         .WithDescription("Please select the channel to which to send the verification interface message.\nThis channel is used to verify new members.\n\nPlease make sure this is a read-only channel for unverified members.")
                                         .WithColor(Color.Gold)
                                     .Build() }, false, false, null, new ComponentBuilder()
                                         .WithSelectMenu("verificationChannel", options)
                                         .WithButton("Next", "setupNext", ButtonStyle.Success)
                                     .Build()).GetAwaiter().GetResult();
-                                    module.serverMemory[server]["SetupStep"] = 4;
+                                    module.serverMemory[server]["SetupStep"] = 5;
                                 } catch {
                                     channel.SendMessageAsync("", false, new EmbedBuilder()
                                         .WithTitle("Queen Guard: An error occured")
@@ -315,27 +387,27 @@ namespace Ferever {
                                         .WithColor(Color.Red)
                                     .Build()).GetAwaiter().GetResult();
                                 }
-                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 4 && module.serverMemory[server].ContainsKey("SetupVerificationChannel")) {
+                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 5 && module.serverMemory[server].ContainsKey("SetupVerificationChannel")) {
                                 interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
-                                    .WithTitle("Queen Guard Setup: Step 5")
+                                    .WithTitle("Queen Guard Setup: Step 6")
                                     .WithDescription("Please create a verification welcome message.\nThis message will be displayed in the verification embed.\n\nPress 'Open Editor' to open the editor.")
                                     .WithColor(Color.Gold)
                                 .Build() }, false, false, null, new ComponentBuilder()
                                     .WithButton("Open Editor", "verificationMessageEditor")
                                     .WithButton("Next", "setupNext", ButtonStyle.Success)
                                 .Build()).GetAwaiter().GetResult();
-                                module.serverMemory[server]["SetupStep"] = 5;
-                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 5) {
+                                module.serverMemory[server]["SetupStep"] = 6;
+                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 6) {
                                 interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
-                                    .WithTitle("Queen Guard Setup: Step 6")
+                                    .WithTitle("Queen Guard Setup: Step 7")
                                     .WithDescription("You can now create the 5 verification questions, press 'Open Editor' to start.")
                                     .WithColor(Color.Gold)
                                 .Build() }, false, false, null, new ComponentBuilder()
                                     .WithButton("Open Editor", "verificationFormEditor")
                                     .WithButton("Finish Setup", "setupNext", ButtonStyle.Success)
                                 .Build()).GetAwaiter().GetResult();
-                                module.serverMemory[server]["SetupStep"] = 6;
-                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 6) {
+                                module.serverMemory[server]["SetupStep"] = 7;
+                            } else if (((int)module.serverMemory[server]["SetupStep"]) == 7) {
                                 interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
                                     .WithTitle("Queen Guard Setup")
                                     .WithDescription("Saving configuration...")
@@ -373,6 +445,7 @@ namespace Ferever {
                                 conf.Set("messageContent", oldMsg);
                                 conf.Set("reviewerRole", module.serverMemory[server]["SetupReviewerRole"]);
                                 conf.Set("sparkRole", module.serverMemory[server]["SetupSparkRole"]);
+                                conf.Set("verifiedSparkRole", module.serverMemory[server]["SetupVerifiedSparkRole"]);
                                 
                                 server.SaveAll();
                                 module.LoadServer(GetBot(), guild, server);

@@ -54,6 +54,8 @@ namespace Ferever
                 Server server = GetBot().GetServerFromSocketGuild(guild);
                 if (serverMemory[server].ContainsKey("submitted-" + user.Id))
                     serverMemory[server].Remove("submitted-" + user.Id);
+                if (serverMemory[server].ContainsKey("reviewers-" + user.Id))
+                    serverMemory[server].Remove("reviewers-" + user.Id);
                 return Task.CompletedTask;
             };
 
@@ -89,6 +91,7 @@ namespace Ferever
                         .Build()).GetAwaiter().GetResult();
                         strm.Close();
                         
+                        serverMemory[server]["reviewers-" + user.Id] = new List<ulong>();
                         serverMemory[server]["submitted-" + user.Id] = true;
                     }
                 }
@@ -106,7 +109,10 @@ namespace Ferever
 
                     if (interaction.Data.CustomId == "beginVerification" && conf.GetOrDefault("verificationQuestion1", null) != null) {
                         try {
+                            ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
                             ulong sparkRole = (ulong)conf.GetOrDefault("sparkRole", (ulong)0);
+                            if (verifiedSparkRole != 0)
+                                sparkRole = verifiedSparkRole;
                             if (user.Roles.FirstOrDefault(t => t.Id == sparkRole, null) != null) {
                                 interaction.RespondAsync("You have already verified your account, you can visit the other channels of this server.", null, false, true).GetAwaiter().GetResult();
                                 return Task.CompletedTask;
@@ -165,7 +171,14 @@ namespace Ferever
                                 
                                 SocketRole sparks = (SocketRole)guild.GetRole(sparkRole);
                                 ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
-                                guild.GetUser(uid).AddRoleAsync(sparks.Id);
+                                guild.GetUser(uid).AddRoleAsync(sparks.Id).GetAwaiter().GetResult();
+                                ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
+                                if (verifiedSparkRole != 0) {
+                                    SocketRole verifiedSparks = (SocketRole)guild.GetRole(verifiedSparkRole);
+                                    if (verifiedSparks != null) {
+                                        guild.GetUser(uid).AddRoleAsync(verifiedSparks.Id).GetAwaiter().GetResult();
+                                    }
+                                }
                                 interaction.RespondAsync("Accepted user membership, granted the `" + sparks.Name + "` role to <@!" + uid + ">.").GetAwaiter().GetResult();
                                 guild.SystemChannel.SendMessageAsync("Welcome <@!" + uid + ">!").GetAwaiter().GetResult();
                             }

@@ -177,6 +177,9 @@ namespace Ferever
                                 if (count < 1)
                                     count = 1;
 
+                                if (!serverMemory[server].ContainsKey("reviewers-" + user.Id)) {
+                                    serverMemory[server]["reviewers-" + user.Id] = new List<ulong>();
+                                }
                                 List<ulong> acceptedReviewers = (List<ulong>)serverMemory[server]["reviewers-" + user.Id];
                                 accept = acceptedReviewers.Count >= count;
                                 if (!acceptedReviewers.Contains(user.Id)) {

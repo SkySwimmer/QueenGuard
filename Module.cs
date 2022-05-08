@@ -165,9 +165,19 @@ namespace Ferever
                         try {
                             ulong sparkRole = (ulong)conf.GetOrDefault("sparkRole", (ulong)0);
                             if (sparkRole != 0) {
-                                bool accept = false;
-
+                                SocketRole rCheckRole = (SocketRole)guild.GetRole(sparkRole);
+                                ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
+                                if (verifiedSparkRole != 0) {
+                                    rCheckRole = (SocketRole)guild.GetRole(verifiedSparkRole);
+                                }
+                                
                                 ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
+                                if (guild.GetUser(uid).Roles.FirstOrDefault(t => t.Id == rCheckRole.Id) != null) {
+                                    interaction.RespondAsync("<@!" + uid + "> is already a verified member.").GetAwaiter().GetResult();
+                                    return Task.CompletedTask;
+                                }
+                                
+                                bool accept = false;
                                 ulong reviewerRole = (ulong)conf.GetOrDefault("reviewerRole", (ulong)0);
                                 SocketRole reviewers = (SocketRole)guild.GetRole(reviewerRole);
                                 int count = (int)(((double)reviewers.Members.Count() / 100d) * 75d);
@@ -199,7 +209,6 @@ namespace Ferever
                                     
                                     SocketRole sparks = (SocketRole)guild.GetRole(sparkRole);
                                     guild.GetUser(uid).AddRoleAsync(sparks.Id).GetAwaiter().GetResult();
-                                    ulong verifiedSparkRole = (ulong)conf.GetOrDefault("verifiedSparkRole", (ulong)0);
                                     if (verifiedSparkRole != 0) {
                                         SocketRole verifiedSparks = (SocketRole)guild.GetRole(verifiedSparkRole);
                                         if (verifiedSparks != null) {

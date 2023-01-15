@@ -255,10 +255,10 @@ namespace Ferever
                             {
                                 // Setup
                                 SocketSlashCommandDataOption[] options = interaction.Data.Options.ToArray()[0].Options.ToArray();
-                                SocketRole sparkRole = options[0].Value as SocketRole;
-                                SocketRole reviewerRole = options[1].Value as SocketRole;
-                                SocketChannel reviewChannel = options[2].Value as SocketChannel;
-                                SocketChannel panelChannel = options[3].Value as SocketChannel;
+                                SocketRole sparkRole = options.First(t => t.Name == "verification-role").Value as SocketRole;
+                                SocketRole reviewerRole = options.First(t => t.Name == "reviewer-role").Value as SocketRole;
+                                SocketChannel reviewChannel = options.First(t => t.Name == "review-channel").Value as SocketChannel;
+                                SocketChannel panelChannel = options.First(t => t.Name == "panel-channel").Value as SocketChannel;
                                 if (!(reviewChannel is SocketTextChannel))
                                 {
                                     // Error
@@ -282,13 +282,13 @@ namespace Ferever
                                   + "Please verify that you are a feralian to gain access to this server.\n"
                                   + "To begin the verification process, press 'Verify' below.";
                                 string button = "Verify";
-                                if (options.Length >= 5)
-                                    message = options[4].Value as string;
-                                if (options.Length >= 6)
-                                    button = options[5].Value as string;
+                                if (options.Any(t => t.Name == "panel-message"))
+                                    message = options.First(t => t.Name == "panel-message").Value as string;
+                                if (options.Any(t => t.Name == "panel-button"))
+                                    button = options.First(t => t.Name == "panel-button").Value as string;
                                 SocketRole verifSpark = null;
-                                if (options.Length >= 7)
-                                    verifSpark = options[6].Value as SocketRole;
+                                if (options.Any(t => t.Name == "secondary-verification-role"))
+                                    verifSpark = options.First(t => t.Name == "secondary-verification-role").Value as SocketRole;
 
                                 // Save in memory
                                 serverMemory[server]["config-" + user.Id] = new Dictionary<string, object>()
@@ -425,7 +425,7 @@ namespace Ferever
                                     case "panel":
                                         {
                                             SocketSlashCommandDataOption[] options = interaction.Data.Options.ToArray()[0].Options.ToArray()[0].Options.ToArray();
-                                            SocketChannel panelChannel = options[0].Value as SocketChannel;
+                                            SocketChannel panelChannel = options.First(t => t.Name == "panel-channel").Value as SocketChannel;
                                             if (!(panelChannel is SocketTextChannel))
                                             {
                                                 // Error
@@ -438,10 +438,10 @@ namespace Ferever
                                             // Optional arguments
                                             string message = conf.Get("messageContent").ToString();
                                             string button = conf.Get("buttonMessage").ToString();
-                                            if (options.Length >= 2)
-                                                message = options[1].Value as string;
-                                            if (options.Length >= 3)
-                                                button = options[2].Value as string;
+                                            if (options.Any(t => t.Name == "panel-message"))
+                                                message = options.First(t => t.Name == "panel-message").Value as string;
+                                            if (options.Any(t => t.Name == "panel-button"))
+                                                button = options.First(t => t.Name == "panel-button").Value as string;
 
                                             // Respond
                                             interaction.RespondAsync("", new Embed[] { new EmbedBuilder()
@@ -473,8 +473,8 @@ namespace Ferever
                                     case "review":
                                         {
                                             SocketSlashCommandDataOption[] options = interaction.Data.Options.ToArray()[0].Options.ToArray()[0].Options.ToArray();
-                                            SocketRole reviewerRole = options[0].Value as SocketRole;
-                                            SocketChannel reviewChannel = options[1].Value as SocketChannel;
+                                            SocketRole reviewerRole = options.First(t => t.Name == "reviewer-role").Value as SocketRole;
+                                            SocketChannel reviewChannel = options.First(t => t.Name == "review-channel").Value as SocketChannel;
                                             if (!(reviewChannel is SocketTextChannel))
                                             {
                                                 // Error
@@ -513,10 +513,10 @@ namespace Ferever
                                     case "verification-role":
                                         {
                                             SocketSlashCommandDataOption[] options = interaction.Data.Options.ToArray()[0].Options.ToArray()[0].Options.ToArray();
-                                            SocketRole sparkRole = options[0].Value as SocketRole;
+                                            SocketRole sparkRole = options.First(t => t.Name == "verification-role").Value as SocketRole;
                                             SocketRole verifSpark = null;
-                                            if (options.Length >= 2)
-                                                verifSpark = options[1].Value as SocketRole;
+                                            if (options.Any(t => t.Name == "secondary-verification-role"))
+                                                verifSpark = options.First(t => t.Name == "secondary-verification-role").Value as SocketRole;
 
                                             // Respond
                                             interaction.RespondAsync("", new Embed[] { new EmbedBuilder()

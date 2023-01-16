@@ -631,7 +631,7 @@ namespace Ferever
                         try
                         {
                             // Confirm
-                            ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("rejectUser/".Length));
+                            ulong uid = ulong.Parse(interaction.Data.CustomId.Substring("acceptUser/".Length));
                             interaction.RespondAsync(interaction.User.Mention + ", are you sure you want to accept this user?", components: new ComponentBuilder()
                                     .WithButton("Confirm", "acceptUserConfirm/" + uid, ButtonStyle.Success)
                                     .WithButton("Cancel", "dismiss", ButtonStyle.Primary)
@@ -668,11 +668,11 @@ namespace Ferever
                                 interaction.Message.DeleteAsync().GetAwaiter().GetResult();
 
                                 // Update embed
-                                if (serverMemory[server].ContainsKey("verification-" + user.Id))
+                                if (serverMemory[server].ContainsKey("verification-" + uid))
                                 {
                                     // Get review message
-                                    string msg = serverMemory[server].GetValue("verification-" + user.Id).ToString();
-                                    serverMemory[server].Remove("verification-" + user.Id);
+                                    string msg = serverMemory[server].GetValue("verification-" + uid).ToString();
+                                    serverMemory[server].Remove("verification-" + uid);
 
                                     // Parse info
                                     string chID = msg.Split("/")[0];
@@ -747,11 +747,11 @@ namespace Ferever
                             interaction.Message.DeleteAsync().GetAwaiter().GetResult();
 
                             // Update embed
-                            if (serverMemory[server].ContainsKey("verification-" + user.Id))
+                            if (serverMemory[server].ContainsKey("verification-" + uid))
                             {
                                 // Get review message
-                                string msg = serverMemory[server].GetValue("verification-" + user.Id).ToString();
-                                serverMemory[server].Remove("verification-" + user.Id);
+                                string msg = serverMemory[server].GetValue("verification-" + uid).ToString();
+                                serverMemory[server].Remove("verification-" + uid);
 
                                 // Parse info
                                 string chID = msg.Split("/")[0];
@@ -838,8 +838,8 @@ namespace Ferever
                                 .Build(), null, null, null, new ComponentBuilder()
                                     .WithButton(conf.Get("buttonMessage").ToString(), "beginVerification", ButtonStyle.Success)
                                 .Build()).GetAwaiter().GetResult();
-                                    conf.Set("verificationMessageID", msg.Id);
-                                    server.SaveAll();
+                                conf.Set("verificationMessageID", msg.Id);
+                                server.SaveAll();
                             }
                             catch
                             {
